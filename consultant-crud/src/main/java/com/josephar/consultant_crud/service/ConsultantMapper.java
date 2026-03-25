@@ -1,7 +1,8 @@
-// src/main/java/com/josephar/consultant_crud/service/ConsultantMapper.java
 package com.josephar.consultant_crud.service;
 
 import com.josephar.consultant_crud.dto.ConsultantDTO;
+import com.josephar.consultant_crud.dto.CreateConsultantRequest;
+import com.josephar.consultant_crud.dto.UpdateConsultantRequest;
 import com.josephar.consultant_crud.model.Consultant;
 
 public class ConsultantMapper {
@@ -17,14 +18,29 @@ public class ConsultantMapper {
         );
     }
 
-    public static Consultant toEntity(ConsultantDTO dto) {
+    public static Consultant toEntity(CreateConsultantRequest request) {
         Consultant c = new Consultant();
-        c.setId(dto.getId());
-        c.setFirstName(dto.getFirstName());
-        c.setLastName(dto.getLastName());
-        c.setEmail(dto.getEmail());
-        c.setExpertise(dto.getExpertise());
-        c.setAge(dto.getAge());
+        c.setFirstName(normalizeText(request.getFirstName()));
+        c.setLastName(normalizeText(request.getLastName()));
+        c.setEmail(normalizeEmail(request.getEmail()));
+        c.setExpertise(normalizeText(request.getExpertise()));
+        c.setAge(request.getAge());
         return c;
+    }
+
+    public static void applyUpdate(Consultant consultant, UpdateConsultantRequest request) {
+        if (request.getFirstName() != null) consultant.setFirstName(normalizeText(request.getFirstName()));
+        if (request.getLastName() != null) consultant.setLastName(normalizeText(request.getLastName()));
+        if (request.getEmail() != null) consultant.setEmail(normalizeEmail(request.getEmail()));
+        if (request.getExpertise() != null) consultant.setExpertise(normalizeText(request.getExpertise()));
+        if (request.getAge() != null) consultant.setAge(request.getAge());
+    }
+
+    private static String normalizeText(String value) {
+        return value == null ? null : value.trim();
+    }
+
+    private static String normalizeEmail(String value) {
+        return value == null ? null : value.trim().toLowerCase();
     }
 }

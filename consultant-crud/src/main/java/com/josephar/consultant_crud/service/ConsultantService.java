@@ -17,8 +17,19 @@ public class ConsultantService {
         this.repository = repository;
     }
 
-    public List<Consultant> findAll() {
-        return repository.findAll();
+    public List<Consultant> findAll(String search) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll();
+        }
+
+        String normalizedSearch = search.trim();
+
+        return repository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrExpertiseContainingIgnoreCase(
+                normalizedSearch,
+                normalizedSearch,
+                normalizedSearch,
+                normalizedSearch
+        );
     }
 
     public Consultant save(Consultant consultant) {

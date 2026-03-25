@@ -11,8 +11,8 @@
 	<groupId>com.josephar</groupId>
 	<artifactId>consultant-crud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>consultant-crud</name>
+	<description>Consultant CRUD backend API</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -33,10 +33,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,10 +1,14 @@
 package com.josephar.consultant_crud.controller;
 
 import com.josephar.consultant_crud.dto.ConsultantDTO;
+import com.josephar.consultant_crud.dto.CreateConsultantRequest;
+import com.josephar.consultant_crud.dto.UpdateConsultantRequest;
 import com.josephar.consultant_crud.model.Consultant;
 import com.josephar.consultant_crud.service.ConsultantMapper;
 import com.josephar.consultant_crud.service.ConsultantService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +26,8 @@ public class ConsultantController {
 
     // GET all consultants
     @GetMapping
-    public List<ConsultantDTO> getAll() {
-        return service.findAll()
+    public List<ConsultantDTO> getAll(@RequestParam(required = false) String search) {
+        return service.findAll(search)
                 .stream()
                 .map(ConsultantMapper::toDTO)
                 .toList();
@@ -37,22 +41,16 @@ public class ConsultantController {
 
     // CREATE
     @PostMapping
-    public ConsultantDTO create(@RequestBody @Valid ConsultantDTO dto) {
-        Consultant saved = service.save(ConsultantMapper.toEntity(dto));
-        return ConsultantMapper.toDTO(saved);
+    public ResponseEntity<ConsultantDTO> create(@RequestBody @Valid CreateConsultantRequest request) {
+        Consultant saved = service.save(ConsultantMapper.toEntity(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ConsultantMapper.toDTO(saved));
     }
 
     // UPDATE
     @PatchMapping("/{id}")
-    public ConsultantDTO update(@PathVariable Long id, @RequestBody @Valid ConsultantDTO dto) {
+    public ConsultantDTO update(@PathVariable Long id, @RequestBody @Valid UpdateConsultantRequest request) {
         Consultant existing = service.findById(id);
-
-        // Only update fields that are not null (for PATCH behavior)
-        if (dto.getFirstName() != null) existing.setFirstName(dto.getFirstName());
-        if (dto.getLastName() != null) existing.setLastName(dto.getLastName());
-        if (dto.getEmail() != null) existing.setEmail(dto.getEmail());
-        if (dto.getExpertise() != null) existing.setExpertise(dto.getExpertise());
-        if (dto.getAge() != 0) existing.setAge(dto.getAge());
+        ConsultantMapper.applyUpdate(existing, request);
 
         Consultant updated = service.save(existing);
         return ConsultantMapper.toDTO(updated);
@@ -60,7 +58,8 @@ public class ConsultantController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
